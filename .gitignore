@@ -1,0 +1,23 @@
+# Node modules and build output
+node_modules/
+dist/
+
+# phpMyAdmin files
+./localhosutlocalhost _ 127.0.0.1 _ handson_db _ phpMyAdmin 5.2.1_files/
+localhost _ 127.0.0.1 _ handson_db _ phpMyAdmin 5.2.1_files.html
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*

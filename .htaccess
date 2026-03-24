@@ -1,0 +1,35 @@
+# Enable RewriteEngine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /handsonapplication/
+    
+    # If the request is for a real file or directory, serve it directly
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    
+    # API modules - allow direct access
+    RewriteRule ^api/modules/(.*)$ api/modules/$1 [L]
+    
+    # Assets - allow direct access
+    RewriteRule ^assets/(.*)$ assets/$1 [L]
+    
+    # Pages directory - allow direct access
+    RewriteRule ^pages/(.*)$ pages/$1 [L]
+    
+    # Root index.php
+    RewriteRule ^$ index.php [L]
+</IfModule>
+
+# Enable PHP error logging
+php_value error_reporting E_ALL
+php_value display_errors On
+
+# Deny access to sensitive files
+<FilesMatch "\.(sql|env|md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Disable eval() CSP warning - allow inline scripts
+Header set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:;"
