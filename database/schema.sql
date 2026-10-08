@@ -186,18 +186,18 @@ VALUES
 -- Insert worker profiles
 INSERT INTO worker_profiles (user_id, category, experience, bio, hourly_rate, latitude, longitude, availability, is_verified) VALUES
 -- Plumbers (users 2-4)
-(2, 'plumber', '5_plus_years', 'Experienced plumber with over 5 years in residential and commercial plumbing. Expert in pipe installation, repairs, and maintenance.', 1500.00, -1.2234, 36.8656, 'available', TRUE),
-(3, 'plumber', '3-5_years', 'Professional plumber offering quality plumbing services. Specializes in leak repairs and pipe fittings.', 1200.00, -1.2240, 36.8660, 'available', TRUE),
-(4, 'plumber', '1-2_years', 'Skilled plumber providing reliable plumbing solutions for homes and businesses.', 1000.00, -1.2250, 36.8670, 'available', FALSE),
+(2, 'plumber', '5_plus_years', 'Experienced plumber with over 5 years in residential and commercial plumbing. Expert in pipe installation, repairs, and maintenance.', 800.00, -1.2234, 36.8656, 'available', TRUE),
+(3, 'plumber', '3-5_years', 'Professional plumber offering quality plumbing services. Specializes in leak repairs and pipe fittings.', 700.00, -1.2240, 36.8660, 'available', TRUE),
+(4, 'plumber', '1-2_years', 'Skilled plumber providing reliable plumbing solutions for homes and businesses.', 600.00, -1.2250, 36.8670, 'available', FALSE),
 -- Electricians (users 5-7)
-(5, 'electrician', '3-5_years', 'Certified electrician specializing in wiring, installations, and electrical repairs. Safe and reliable service.', 2000.00, -1.2245, 36.8670, 'available', TRUE),
-(6, 'electrician', '5_plus_years', 'Expert electrician with extensive experience in commercial and residential electrical work.', 2500.00, -1.2255, 36.8680, 'available', TRUE),
-(7, 'electrician', '1-2_years', 'Professional electrician offering affordable electrical services and installations.', 1500.00, -1.2265, 36.8690, 'available', FALSE),
+(5, 'electrician', '3-5_years', 'Certified electrician specializing in wiring, installations, and electrical repairs. Safe and reliable service.', 1000.00, -1.2245, 36.8670, 'available', TRUE),
+(6, 'electrician', '5_plus_years', 'Expert electrician with extensive experience in commercial and residential electrical work.', 1200.00, -1.2255, 36.8680, 'available', TRUE),
+(7, 'electrician', '1-2_years', 'Professional electrician offering affordable electrical services and installations.', 800.00, -1.2265, 36.8690, 'available', FALSE),
 -- Cleaners (users 8-10)
-(8, 'cleaner', '1-2_years', 'Professional cleaner offering residential and commercial cleaning services.', 800.00, -1.2290, 36.8710, 'available', TRUE),
-(9, 'cleaner', '3-5_years', 'Experienced cleaner providing thorough deep cleaning services.', 1000.00, -1.2300, 36.8720, 'available', TRUE),
-(10, 'cleaner', '5_plus_years', 'Expert cleaner offering professional office and home cleaning solutions.', 1200.00, -1.2310, 36.8730, 'available', TRUE),
+(8, 'cleaner', '1-2_years', 'Professional cleaner offering residential and commercial cleaning services.', 400.00, -1.2290, 36.8710, 'available', TRUE),
+(9, 'cleaner', '3-5_years', 'Experienced cleaner providing thorough deep cleaning services.', 500.00, -1.2300, 36.8720, 'available', TRUE),
+(10, 'cleaner', '5_plus_years', 'Expert cleaner offering professional office and home cleaning solutions.', 600.00, -1.2310, 36.8730, 'available', TRUE),
 -- Mechanics (users 11-13)
-(11, 'mechanic', '5_plus_years', 'Expert mechanic specializing in vehicle repairs, maintenance, and diagnostic services.', 2500.00, -1.2280, 36.8700, 'available', TRUE),
-(12, 'mechanic', '3-5_years', 'Professional mechanic offering reliable car repair and servicing.', 2000.00, -1.2290, 36.8710, 'available', TRUE),
-(13, 'mechanic', '1-2_years', 'Skilled mechanic providing affordable vehicle maintenance services.', 1500.00, -1.2300, 36.8720, 'available', FALSE);
+(11, 'mechanic', '5_plus_years', 'Expert mechanic specializing in vehicle repairs, maintenance, and diagnostic services.', 1200.00, -1.2280, 36.8700, 'available', TRUE),
+(12, 'mechanic', '3-5_years', 'Professional mechanic offering reliable car repair and servicing.', 1000.00, -1.2290, 36.8710, 'available', TRUE),
+(13, 'mechanic', '1-2_years', 'Skilled mechanic providing affordable vehicle maintenance services.', 800.00, -1.2300, 36.8720, 'available', FALSE);

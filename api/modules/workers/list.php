@@ -109,48 +109,71 @@ try {
     
     // Return sample data if no workers found
     if (count($workers) === 0) {
+        // Use provider accounts from landing.php for consistency
         $workers = [
             [
-                'user_id' => 2,
-                'name' => 'David Plumber',
-                'phone' => '+254723456789',
+                'user_id' => 201,
+                'name' => 'James Ochieng',
+                'phone' => '254755555555',
                 'category' => 'plumber',
                 'experience' => '5_plus_years',
                 'bio' => 'Experienced plumber with over 5 years in residential and commercial plumbing.',
-                'hourly_rate' => 1500,
+                'hourly_rate' => 500,
                 'availability' => 'available',
                 'is_verified' => true,
                 'rating_avg' => 4.8,
                 'review_count' => 45,
-                'distance' => 1.2
+                'distance' => 1.2,
+                'latitude' => -1.2225 + 0.005,
+                'longitude' => 36.8947 + 0.003
             ],
             [
-                'user_id' => 3,
-                'name' => 'Mary Electrician',
-                'phone' => '+254734567890',
+                'user_id' => 202,
+                'name' => 'Francis Otieno',
+                'phone' => '254766666666',
                 'category' => 'electrician',
                 'experience' => '3-5_years',
                 'bio' => 'Certified electrician specializing in wiring, installations, and electrical repairs.',
-                'hourly_rate' => 2000,
+                'hourly_rate' => 600,
+                'availability' => 'available',
+                'is_verified' => true,
+                'rating_avg' => 4.6,
+                'review_count' => 38,
+                'distance' => 2.5,
+                'latitude' => -1.2180,
+                'longitude' => 36.8900
+            ],
+            [
+                'user_id' => 203,
+                'name' => 'Grace Wanjiku',
+                'phone' => '254777777777',
+                'category' => 'cleaner',
+                'experience' => '5_plus_years',
+                'bio' => 'Professional cleaner with expertise in residential and office cleaning.',
+                'hourly_rate' => 300,
                 'availability' => 'available',
                 'is_verified' => true,
                 'rating_avg' => 4.9,
                 'review_count' => 62,
-                'distance' => 2.5
+                'distance' => 3.1,
+                'latitude' => -1.2300,
+                'longitude' => 36.8980
             ],
             [
-                'user_id' => 4,
-                'name' => 'James Carpenter',
-                'phone' => '+254745678901',
-                'category' => 'carpenter',
+                'user_id' => 204,
+                'name' => 'Simon Omondi',
+                'phone' => '254788888888',
+                'category' => 'mechanic',
                 'experience' => '5_plus_years',
-                'bio' => 'Skilled carpenter with expertise in furniture making and installations.',
-                'hourly_rate' => 1800,
+                'bio' => 'Experienced mechanic specializing in car repairs and maintenance.',
+                'hourly_rate' => 700,
                 'availability' => 'available',
                 'is_verified' => true,
                 'rating_avg' => 4.7,
-                'review_count' => 38,
-                'distance' => 3.1
+                'review_count' => 51,
+                'distance' => 4.0,
+                'latitude' => -1.2350,
+                'longitude' => 36.8850
             ]
         ];
         

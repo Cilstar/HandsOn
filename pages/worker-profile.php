@@ -103,19 +103,144 @@
         let workerData = null;
         
         document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is logged in
             await checkAuth();
             
             const urlParams = new URLSearchParams(window.location.search);
             const workerId = urlParams.get('id');
+            const workerName = urlParams.get('name');
+            const workerCategory = urlParams.get('category');
+            const workerRating = urlParams.get('rating');
+            const workerHourlyRate = urlParams.get('hourlyRate');
+            const workerPhone = urlParams.get('phone');
+            const workerBio = urlParams.get('bio');
+            const shouldBook = urlParams.get('book') === '1';
             
-            if (!workerId) {
+            // If we have workerId and it's a valid number (from database), try API
+            if (workerId && !isNaN(parseInt(workerId)) && parseInt(workerId) < 1000) {
+                await loadWorkerProfile(workerId);
+                // If book=1, open booking modal after profile loads
+                if (shouldBook) {
+                    setTimeout(function() {
+                        if (workerData) {
+                            openRequestModal();
+                        } else {
+                            openBookingModal();
+                        }
+                    }, 500);
+                }
+            } else if (workerName && workerCategory) {
+                // If workerId is >= 1000 (mock data), render from URL params
+                renderFromUrl(workerName, workerCategory, workerRating, workerHourlyRate, workerPhone, workerBio);
+                // If book=1, open booking modal
+                if (shouldBook) {
+                    setTimeout(openBookingModal, 500);
+                }
+            } else {
                 showAlert('Worker not found', 'error');
                 window.location.href = 'workers.php';
-                           
-                            return;
             }
-            await loadWorkerProfile(workerId);
         });
+        
+        function renderFromUrl(name, category, rating, hourlyRate, phone, bio) {
+            const content = document.getElementById('profile-content');
+            
+            content.innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            ${CATEGORIES[category] ? CATEGORIES[category].icon : '👤'}
+                        </div>
+                        <div class="profile-details">
+                            <h2>${name}</h2>
+                            <p>${CATEGORIES[category]?.name || category}</p>
+                            <p>Available for service</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="workers-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div>
+                        <div class="card" style="background: white; padding: 25px; border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow);">
+                            <h3 class="mb-2">About</h3>
+                            <p>${bio || 'Professional ' + (CATEGORIES[category]?.name || category) + ' ready to serve you.'}</p>
+                            
+                            <div class="worker-stats mt-2">
+                                <div class="worker-stat">
+                                    <div class="worker-stat-value">${rating || '0.0'}</div>
+                                    <div class="worker-stat-label">Rating</div>
+                                </div>
+                                <div class="worker-stat">
+                                    <div class="worker-stat-value">0</div>
+                                    <div class="worker-stat-label">Reviews</div>
+                                </div>
+                                <div class="worker-stat">
+                                    <div class="worker-stat-value">Expert</div>
+                                    <div class="worker-stat-label">Experience</div>
+                                </div>
+                            </div>
+                            
+                            <div class="worker-rating mt-2">
+                                ${getRatingStars(parseFloat(rating) || 0)}
+                            </div>
+                            
+                            ${hourlyRate ? `<div class="worker-price mt-2">KSh ${hourlyRate} <span>/ hour</span></div>` : ''}
+                            
+                            <button class="btn btn-primary mt-2" style="width: 100%;" onclick="openBookingModal()">Book Now</button>
+                        </div>
+                        
+                        <div class="card" style="background: white; padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow);">
+                            <h3 class="mb-2">Contact</h3>
+                            <p><strong>Phone:</strong> ${phone || 'Available on booking'}</p>
+                            <p><strong>Email:</strong> Available on booking</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="card" style="background: white; padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow);">
+                            <h3 class="mb-2">Services Offered</h3>
+                            <p>Professional ${CATEGORIES[category]?.name || category} services including:</p>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                <li>Home repairs and maintenance</li>
+                                <li>Emergency services</li>
+                                <li>Quality guaranteed work</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Store data for booking
+            window.bookingData = {
+                name: name,
+                category: category,
+                rating: rating,
+                hourlyRate: hourlyRate,
+                phone: phone,
+                bio: bio
+            };
+        }
+        
+        function openBookingModal() {
+            if (!currentUser) {
+                showAlert('Please login to book a service', 'warning');
+                // Store the current provider info for redirect after login
+                localStorage.setItem('pendingProvider', JSON.stringify({
+                    id: workerId,
+                    name: workerData.name,
+                    category: workerData.category,
+                    rating: workerData.rating,
+                    hourlyRate: workerData.hourly_rate,
+                    phone: workerData.phone,
+                    bio: workerData.bio
+                }));
+                localStorage.setItem('pendingBookNow', 'true');
+                window.location.href = 'login.php';
+                return;
+            }
+            
+            openModal('request-modal');
+        }
         
         async function loadWorkerProfile(workerId) {
             try {
@@ -181,7 +306,7 @@
                             
                             ${worker.hourly_rate ? `<div class="worker-price mt-2">${formatCurrency(worker.hourly_rate)} <span>/ hour</span></div>` : ''}
                             
-                            <button class="btn btn-success mt-2" style="width: 100%;" onclick="openRequestModal()">Request Service</button>
+                            <button class="btn btn-primary mt-2" style="width: 100%;" onclick="openRequestModal()">Request Service</button>
                         </div>
                         
                         <div class="card" style="background: white; padding: 25px; border-radius: var(--radius); box-shadow: var(--shadow);">
@@ -230,6 +355,17 @@
         function openRequestModal() {
             if (!currentUser) {
                 showAlert('Please login to request a service', 'warning');
+                // Store the current provider info for redirect after login
+                localStorage.setItem('pendingProvider', JSON.stringify({
+                    id: workerId,
+                    name: workerData.name,
+                    category: workerData.category,
+                    rating: workerData.rating,
+                    hourlyRate: workerData.hourly_rate,
+                    phone: workerData.phone,
+                    bio: workerData.bio
+                }));
+                localStorage.setItem('pendingBookNow', 'false');
                 window.location.href = 'login.php';
                 return;
             }
@@ -242,6 +378,28 @@
         async function submitRequest(e) {
             e.preventDefault();
             
+            // Check if we have booking data from URL (direct navigation)
+            if (window.bookingData) {
+                const jobData = {
+                    worker_id: 0, // Will be assigned by system
+                    category: window.bookingData.category,
+                    title: document.getElementById('job-title').value,
+                    description: document.getElementById('job-description').value,
+                    address: document.getElementById('job-address').value,
+                    scheduled_date: document.getElementById('job-date').value,
+                    scheduled_time: document.getElementById('job-time').value
+                };
+                
+                const jobId = await createJob(jobData);
+                
+                if (jobId) {
+                    closeModal('request-modal');
+                    window.location.href = `jobs.php`;
+                }
+                return;
+            }
+            
+            // Original flow for API-loaded worker
             const jobData = {
                 worker_id: document.getElementById('modal-worker-id').value,
                 category: document.getElementById('modal-category').value,

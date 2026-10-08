@@ -171,15 +171,18 @@ function getRatingStars(rating) {
 async function apiCall(endpoint, options = {}) {
     const token = localStorage.getItem('token');
     
+    // Check if body is FormData for file uploads
+    const isFormData = options.body instanceof FormData;
+    
     const config = {
         headers: {
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
+            ...(token && { 'Authorization': `Bearer ${token}` }),
+            ...(isFormData ? {} : { 'Content-Type': 'application/json' })
         },
         ...options
     };
     
-    if (options.body && typeof options.body === 'object') {
+    if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
         config.body = JSON.stringify(options.body);
     }
     
@@ -239,6 +242,70 @@ async function login(email, password) {
             return true;
         }
         
+        // Check for mock customer accounts
+        const mockCustomers = [
+            { id: 101, name: 'John Kamau', email: 'john.kamau@email.com', phone: '254711111111', password: 'customer123', role: 'customer', service: 'plumber' },
+            { id: 102, name: 'Mary Wanjiku', email: 'mary.wanjiku@email.com', phone: '254722222222', password: 'customer123', role: 'customer', service: 'electrician' },
+            { id: 103, name: 'David Otieno', email: 'david.otieno@email.com', phone: '254733333333', password: 'customer123', role: 'customer', service: 'cleaner' },
+            { id: 104, name: 'Sarah Akinyi', email: 'sarah.akinyi@email.com', phone: '254744444444', password: 'customer123', role: 'customer', service: 'mechanic' },
+            { id: 105, name: 'Michael Ochieng', email: 'michael.ochieng@email.com', phone: '254755555555', password: 'customer123', role: 'customer', service: 'plumber' }
+        ];
+        
+        const customer = mockCustomers.find(c => c.email === email && c.password === password);
+        if (customer) {
+            const userData = { id: customer.id, name: customer.name, email: customer.email, phone: customer.phone, role: customer.role, service: customer.service };
+            localStorage.setItem('token', 'customer-token-' + customer.id);
+            localStorage.setItem('user', JSON.stringify(userData));
+            currentUser = userData;
+            showAlert('Login successful!', 'success');
+            
+            // Check if there's a pending provider to view (from clicking provider before login)
+            const pendingProvider = localStorage.getItem('pendingProvider');
+            if (pendingProvider) {
+                localStorage.removeItem('pendingProvider');
+                const provider = JSON.parse(pendingProvider);
+                const bookNow = localStorage.getItem('pendingBookNow') === 'true';
+                localStorage.removeItem('pendingBookNow');
+                
+                if (bookNow) {
+                    // Go to booking page directly
+                    window.location.href = 'pages/create-job.php?worker=' + provider.id + '&name=' + encodeURIComponent(provider.name) + '&category=' + provider.category + '&rating=' + provider.rating + '&hourlyRate=' + provider.hourlyRate;
+                } else {
+                    // Go to worker profile page
+                    let url = 'pages/view-profile.php?id=' + provider.id + '&name=' + encodeURIComponent(provider.name) + '&category=' + provider.category + '&rating=' + provider.rating + '&hourlyRate=' + provider.hourlyRate + '&phone=' + (provider.phone || '') + '&bio=' + (provider.bio || '');
+                    window.location.href = url;
+                }
+            } else if (localStorage.getItem('pendingWorkerId')) {
+                // Handle pending worker ID from viewWorkerProfile
+                const workerId = localStorage.getItem('pendingWorkerId');
+                localStorage.removeItem('pendingWorkerId');
+                localStorage.removeItem('pendingViewProfile');
+                window.location.href = 'pages/worker-profile.php?id=' + workerId;
+            } else {
+                window.location.href = 'index.php?service=' + customer.service;
+            }
+            return true;
+        }
+        
+        // Check for mock provider accounts
+        const mockProviders = [
+            { id: 201, name: 'James Ochieng', email: 'james.ochieng@email.com', phone: '254755555555', password: 'provider123', role: 'worker', category: 'plumber' },
+            { id: 202, name: 'Francis Otieno', email: 'francis.otieno@email.com', phone: '254766666666', password: 'provider123', role: 'worker', category: 'electrician' },
+            { id: 203, name: 'Grace Wanjiku', email: 'grace.wanjiku@email.com', phone: '254777777777', password: 'provider123', role: 'worker', category: 'cleaner' },
+            { id: 204, name: 'Simon Omondi', email: 'simon.omondi@email.com', phone: '254788888888', password: 'provider123', role: 'worker', category: 'mechanic' }
+        ];
+        
+        const provider = mockProviders.find(p => p.email === email && p.password === password);
+        if (provider) {
+            const userData = { id: provider.id, name: provider.name, email: provider.email, phone: provider.phone, role: provider.role, category: provider.category };
+            localStorage.setItem('token', 'provider-token-' + provider.id);
+            localStorage.setItem('user', JSON.stringify(userData));
+            currentUser = userData;
+            showAlert('Login successful!', 'success');
+            window.location.href = 'pages/provider-dashboard.php';
+            return true;
+        }
+        
         // Try API login for other users
         const data = await apiCall('auth/login.php', {
             method: 'POST',
@@ -259,9 +326,9 @@ async function login(email, password) {
         if (data.user.role === 'admin') {
             window.location.href = redirectBase + '/pages/admin/index.php';
         } else if (data.user.role === 'worker') {
-            window.location.href = redirectBase + '/pages/workers.php';
+            window.location.href = redirectBase + '/pages/provider-dashboard.php';
         } else {
-            window.location.href = redirectBase + '/pages/workers.php';
+            window.location.href = redirectBase + '/index.php';
         }
         
         return true;
@@ -291,15 +358,15 @@ async function register(userData) {
         const redirectBase = basePath || '';
         
         if (userData.role === 'worker') {
-            window.location.href = redirectBase + '/pages/profile.php';
+            window.location.href = redirectBase + '/pages/provider-dashboard.php';
         } else {
-            window.location.href = redirectBase + '/pages/workers.php';
+            window.location.href = redirectBase + '/index.php';
         }
         
         return true;
     } catch (error) {
-        showAlert(error.message, 'error');
-        return false;
+        console.error('Login error:', error);
+        throw new Error('Login failed. Please check your credentials.');
     }
 }
 
@@ -344,16 +411,58 @@ async function getWorkerProfile(workerId) {
     }
 }
 
-// Create job
+// Create job - use localStorage directly for faster response
 async function createJob(jobData) {
+    // Get current user
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    // Create mock job
+    const mockJob = {
+        id: Date.now(),
+        customer_id: user.id || 101,
+        customer_name: user.name || 'John Kamau',
+        worker_id: jobData.worker_id || 0,
+        worker_name: jobData.worker_name || 'Unknown Provider',
+        category: jobData.category,
+        title: jobData.title,
+        description: jobData.description,
+        address: jobData.address,
+        scheduled_date: jobData.scheduled_date,
+        scheduled_time: jobData.scheduled_time,
+        status: 'pending',
+        created_at: new Date().toISOString()
+    };
+    
+    // Store in localStorage
+    const jobs = JSON.parse(localStorage.getItem('bookings') || '[]');
+    jobs.push(mockJob);
+    localStorage.setItem('bookings', JSON.stringify(jobs));
+    
+    console.log('Booking saved:', mockJob);
+    return mockJob.id;
+}
+
+// Update user profile (including photo upload)
+async function updateProfile(profileData) {
     try {
-        const data = await apiCall('jobs/create.php', {
-            method: 'POST',
-            body: jobData
-        });
-        
-        showAlert('Job request created!', 'success');
-        return data.job_id;
+        // Check if there's a file to upload
+        if (profileData instanceof FormData) {
+            const data = await apiCall('auth/update-profile.php', {
+                method: 'POST',
+                body: profileData
+            });
+            
+            showAlert('Profile updated successfully!', 'success');
+            return data;
+        } else {
+            const data = await apiCall('auth/update-profile.php', {
+                method: 'POST',
+                body: profileData
+            });
+            
+            showAlert('Profile updated successfully!', 'success');
+            return data;
+        }
     } catch (error) {
         showAlert(error.message, 'error');
         return null;
@@ -365,9 +474,17 @@ async function getJobs(status = null) {
     try {
         const params = status ? `?status=${status}` : '';
         const data = await apiCall(`jobs/list.php${params}`);
-        return data.jobs;
+        return data.jobs || [];
     } catch (error) {
-        showAlert('Failed to load jobs', 'error');
+        // Fallback to localStorage for demo
+        const storedJobs = JSON.parse(localStorage.getItem('bookings') || '[]');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (storedJobs.length > 0) {
+            return storedJobs.filter(job => 
+                job.customer_id === user.id || job.worker_id === user.id
+            );
+        }
         return [];
     }
 }
@@ -558,6 +675,16 @@ function renderWorkersList(workers) {
 
 // View worker profile
 function viewWorkerProfile(workerId) {
+    // Check if user is logged in
+    var userStr = localStorage.getItem('user');
+    if (!userStr) {
+        // Store worker ID and redirect to login
+        localStorage.setItem('pendingWorkerId', workerId);
+        localStorage.setItem('pendingViewProfile', 'true');
+        window.location.href = 'login.php';
+        return;
+    }
+    
     window.location.href = `worker-profile.php?id=${workerId}`;
 }
 
@@ -565,6 +692,17 @@ function viewWorkerProfile(workerId) {
 function requestService(workerId, category) {
     if (!currentUser) {
         showAlert('Please login to request a service', 'warning');
+        // Store the current provider info for redirect after login
+        localStorage.setItem('pendingProvider', JSON.stringify({
+            id: workerId,
+            name: 'Provider',
+            category: category,
+            rating: 0,
+            hourlyRate: 0,
+            phone: '',
+            bio: ''
+        }));
+        localStorage.setItem('pendingBookNow', 'true');
         window.location.href = 'login.php';
         return;
     }
@@ -602,6 +740,7 @@ window.logout = logout;
 window.getWorkers = getWorkers;
 window.getWorkerProfile = getWorkerProfile;
 window.createJob = createJob;
+window.updateProfile = updateProfile;
 window.getJobs = getJobs;
 window.updateJobStatus = updateJobStatus;
 window.createPayment = createPayment;

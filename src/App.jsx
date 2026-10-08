@@ -1568,7 +1568,7 @@ function CustomerDashboard() {
                     <Search className="w-5 h-5 text-primary-600" />
                     <span className="text-gray-700">Find Workers</span>
                   </Link>
-                  <button items-center gap- className="flex3 p-3 bg-gray-50/50 rounded-xl hover:bg-gray-100 transition-colors w-full">
+                  <button className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-xl hover:bg-gray-100 transition-colors w-full">
                     <User className="w-5 h-5 text-purple-600" />
                     <span className="text-gray-700">Saved Workers</span>
                   </button>

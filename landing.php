@@ -20,7 +20,7 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f59e0b 100%);
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #f59e0b 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -306,6 +306,10 @@
                 Continue as guest to browse providers
             </p>
             
+            <p style="text-align: center; margin-top: 15px;">
+                <a href="#" onclick="showHowItWorks(); return false;" style="color: #7c3aed; text-decoration: underline; font-weight: 600;">How It Works</a>
+            </p>
+            
 
             
 
@@ -331,15 +335,28 @@
         
         // Preview avatar before upload
         function previewAvatar(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('avatar-preview').style.display = 'block';
-                    document.getElementById('avatar-preview-img').src = e.target.result;
-                    document.getElementById('avatar-data').value = e.target.result;
-                };
-                reader.readAsDataURL(file);
+            try {
+                const file = event.target.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('File too large. Maximum size is 2MB.');
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('avatar-preview').style.display = 'block';
+                        document.getElementById('avatar-preview-img').src = e.target.result;
+                        document.getElementById('avatar-data').value = e.target.result;
+                    };
+                    reader.onerror = function() {
+                        alert('Error reading image file. Please try another image.');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } catch (err) {
+                console.log('Image preview error:', err);
+                // Use default avatar on error
+                document.getElementById('avatar-data').value = '';
             }
         }
         
@@ -372,14 +389,14 @@
         
         // Pre-configured service provider accounts
         const PROVIDER_ACCOUNTS = [
-            { id: 201, name: 'James Ochieng', email: 'james.ochieng@email.com', phone: '254755555555', password: 'provider123', service: 'plumber', category: 'plumber', rating: 4.8, jobs: 45, hourlyRate: 800 },
-            { id: 202, name: 'Francis Otieno', email: 'francis.otieno@email.com', phone: '254766666666', password: 'provider123', service: 'electrician', category: 'electrician', rating: 4.6, jobs: 38, hourlyRate: 1000 },
-            { id: 203, name: 'Grace Wanjiku', email: 'grace.wanjiku@email.com', phone: '254777777777', password: 'provider123', service: 'cleaner', category: 'cleaner', rating: 4.9, jobs: 62, hourlyRate: 500 },
-            { id: 204, name: 'Simon Omondi', email: 'simon.omondi@email.com', phone: '254788888888', password: 'provider123', service: 'mechanic', category: 'mechanic', rating: 4.7, jobs: 51, hourlyRate: 1200 },
-            { id: 205, name: 'Peter Mwangi', email: 'peter.mwangi@email.com', phone: '254799999999', password: 'provider123', service: 'plumber', category: 'plumber', rating: 4.5, jobs: 32, hourlyRate: 750 },
-            { id: 206, name: 'Vincent Kimani', email: 'vincent.kimani@email.com', phone: '254711111122', password: 'provider123', service: 'electrician', category: 'electrician', rating: 4.4, jobs: 28, hourlyRate: 900 },
-            { id: 207, name: 'Mary Kemunto', email: 'mary.kemunto@email.com', phone: '254711111133', password: 'provider123', service: 'cleaner', category: 'cleaner', rating: 4.8, jobs: 55, hourlyRate: 550 },
-            { id: 208, name: 'Dennis Ochieng', email: 'dennis.ochieng@email.com', phone: '254711111144', password: 'provider123', service: 'mechanic', category: 'mechanic', rating: 4.6, jobs: 42, hourlyRate: 1100 }
+            { id: 201, name: 'James Ochieng', email: 'james.ochieng@email.com', phone: '254755555555', password: 'provider123', service: 'plumber', category: 'plumber', rating: 4.8, jobs: 45, hourlyRate: 500 },
+            { id: 202, name: 'Francis Otieno', email: 'francis.otieno@email.com', phone: '254766666666', password: 'provider123', service: 'electrician', category: 'electrician', rating: 4.6, jobs: 38, hourlyRate: 600 },
+            { id: 203, name: 'Grace Wanjiku', email: 'grace.wanjiku@email.com', phone: '254777777777', password: 'provider123', service: 'cleaner', category: 'cleaner', rating: 4.9, jobs: 62, hourlyRate: 300 },
+            { id: 204, name: 'Simon Omondi', email: 'simon.omondi@email.com', phone: '254788888888', password: 'provider123', service: 'mechanic', category: 'mechanic', rating: 4.7, jobs: 51, hourlyRate: 700 },
+            { id: 205, name: 'Peter Mwangi', email: 'peter.mwangi@email.com', phone: '254799999999', password: 'provider123', service: 'plumber', category: 'plumber', rating: 4.5, jobs: 32, hourlyRate: 450 },
+            { id: 206, name: 'Vincent Kimani', email: 'vincent.kimani@email.com', phone: '254711111122', password: 'provider123', service: 'electrician', category: 'electrician', rating: 4.4, jobs: 28, hourlyRate: 550 },
+            { id: 207, name: 'Mary Kemunto', email: 'mary.kemunto@email.com', phone: '254711111133', password: 'provider123', service: 'cleaner', category: 'cleaner', rating: 4.8, jobs: 55, hourlyRate: 350 },
+            { id: 208, name: 'Dennis Ochieng', email: 'dennis.ochieng@email.com', phone: '254711111144', password: 'provider123', service: 'mechanic', category: 'mechanic', rating: 4.6, jobs: 42, hourlyRate: 650 }
         ];
         
         // Admin account
@@ -504,6 +521,137 @@
             localStorage.setItem('user', JSON.stringify(googleUser));
             window.location.href = 'index.php';
         }
+        
+        // How It Works modal
+        window.showHowItWorks = function() {
+            document.getElementById('how-it-works-modal').style.display = 'block';
+        }
+        
+        window.closeHowItWorks = function() {
+            document.getElementById('how-it-works-modal').style.display = 'none';
+        }
+        
+        // Technical Spec modal functions
+        window.showTechSpec = function() {
+            document.getElementById('tech-spec-modal').style.display = 'block';
+        }
+        
+        window.closeTechSpec = function() {
+            document.getElementById('tech-spec-modal').style.display = 'none';
+        }
     </script>
+    
+    <!-- How It Works Modal -->
+    <div id="how-it-works-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; overflow-y: auto;">
+        <div style="background: white; max-width: 600px; margin: 40px auto; border-radius: 20px; padding: 30px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #7c3aed;">How HandsOn Works</h2>
+                <button onclick="closeHowItWorks()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            
+            <div style="display: grid; gap: 20px;">
+                <div style="display: flex; gap: 15px; align-items: start; padding: 15px; background: #f9fafb; border-radius: 12px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7c3aed, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">1</div>
+                    <div>
+                        <h4 style="color: #374151; margin-bottom: 5px;">Create an Account</h4>
+                        <p style="color: #6b7280; font-size: 0.9rem;">Sign up as a customer or service provider</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; align-items: start; padding: 15px; background: #f9fafb; border-radius: 12px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7c3aed, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">2</div>
+                    <div>
+                        <h4 style="color: #374151; margin-bottom: 5px;">Find a Service Provider</h4>
+                        <p style="color: #6b7280; font-size: 0.9rem;">Browse the interactive map to find nearby verified plumbers, electricians, or other skilled workers</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; align-items: start; padding: 15px; background: #f9fafb; border-radius: 12px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7c3aed, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">3</div>
+                    <div>
+                        <h4 style="color: #374151; margin-bottom: 5px;">View Profiles & Reviews</h4>
+                        <p style="color: #6b7280; font-size: 0.9rem;">Check verified profiles, ratings, and reviews from other customers</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; align-items: start; padding: 15px; background: #f9fafb; border-radius: 12px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7c3aed, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">4</div>
+                    <div>
+                        <h4 style="color: #374151; margin-bottom: 5px;">Book a Service</h4>
+                        <p style="color: #6b7280; font-size: 0.9rem;">Request a service and discuss the details with the provider</p>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; align-items: start; padding: 15px; background: #f9fafb; border-radius: 12px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7c3aed, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">5</div>
+                    <div>
+                        <h4 style="color: #374151; margin-bottom: 5px;">Pay & Review</h4>
+                        <p style="color: #6b7280; font-size: 0.9rem;">Make secure payment via M-Pesa and rate your experience</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 style="color: #7c3aed; margin-top: 20px; margin-bottom: 10px;">Key Features</h4>
+            <ul style="margin-left: 20px; color: #374151; line-height: 1.8;">
+                <li>📍 Location-based worker identification using GPS</li>
+                <li>✓ Verified skilled worker profiles</li>
+                <li>🔧 Core trades: plumbing, electrical, carpentry, cleaning</li>
+                <li>📱 Mobile payment support (M-Pesa)</li>
+                <li>⭐ Job-matching by proximity, ratings, availability</li>
+            </ul>
+            
+            <p style="margin-top: 25px; padding: 15px; background: linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%); color: white; border-radius: 10px; text-align: center; font-weight: 600;">
+                Pilot Area: Roysambu, Nairobi
+            </p>
+            
+            <p style="text-align: center; margin-top: 15px;">
+                <a href="#" onclick="showTechSpec(); return false;" style="color: #7c3aed; text-decoration: underline; font-weight: 600;">Technical Details</a>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Technical Spec Modal -->
+    <div id="tech-spec-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 2000; overflow-y: auto;">
+        <div style="background: white; max-width: 600px; margin: 40px auto; border-radius: 20px; padding: 30px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="color: #7c3aed;">Technical Specification</h2>
+                <button onclick="closeTechSpec()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            
+            <div style="color: #374151; line-height: 1.7;">
+                <h4 style="color: #7c3aed;">System Architecture</h4>
+                <ul style="margin-left: 20px;">
+                    <li><strong>Frontend:</strong> HTML5, CSS3, JavaScript</li>
+                    <li><strong>Backend:</strong> PHP with REST API</li>
+                    <li><strong>Database:</strong> MySQL</li>
+                    <li><strong>Maps:</strong> Leaflet.js with OpenStreetMap</li>
+                    <li><strong>Payments:</strong> M-Pesa Integration</li>
+                </ul>
+                
+                <h4 style="color: #7c3aed; margin-top: 20px;">Key Components</h4>
+                <ul style="margin-left: 20px;">
+                    <li>Location-based service matching</li>
+                    <li>Real-time worker tracking</li>
+                    <li>Secure user authentication</li>
+                    <li>Rating and review system</li>
+                    <li>Job booking management</li>
+                    <li>Payment processing</li>
+                </ul>
+                
+                <h4 style="color: #7c3aed; margin-top: 20px;">Database Tables</h4>
+                <ul style="margin-left: 20px;">
+                    <li>Users - user accounts</li>
+                    <li>Service_Providers - worker profiles</li>
+                    <li>Service_Categories - skill categories</li>
+                    <li>Service_Requests - job bookings</li>
+                    <li>Payments - transaction records</li>
+                </ul>
+                
+                <p style="margin-top: 20px; padding: 12px; background: #f3f4f6; border-radius: 8px; text-align: center;">
+                    <strong>Pilot:</strong> Roysambu, Nairobi
+                </p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -274,6 +274,9 @@
         .review-stars { color: #fbbf24; }
         .review-text { color: #6b7280; font-size: 0.9rem; }
     </style>
+    
+    <!-- Main JS -->
+    <script src="../assets/js/main.js"></script>
 </head>
 <body>
     <div class="provider-dashboard">
@@ -315,6 +318,11 @@
                         <span>⭐</span> Reviews
                     </a>
                 </li>
+                <li class="provider-menu-item">
+                    <a href="#" class="provider-menu-link" onclick="showProviderSection('profile')">
+                        <span>👤</span> My Profile
+                    </a>
+                </li>
                 <li class="provider-menu-item" style="margin-top: 40px;">
                     <a href="#" class="provider-menu-link" onclick="logout()">
                         <span>🚪</span> Logout
@@ -326,7 +334,7 @@
         <!-- Main Content -->
         <main class="provider-main">
             <div class="provider-header">
-                <h1 class="provider-title">Welcome back, James! 👋</h1>
+                <h1 class="provider-title">Welcome back, Simon! 👋</h1>
                 <div class="provider-status-toggle">
                     <span>Available for jobs</span>
                     <label class="status-switch">
@@ -427,6 +435,74 @@
                 </div>
             </div>
             
+            <!-- Profile Section -->
+            <div id="profile-section" style="display: none;">
+                <div class="jobs-section">
+                    <div class="jobs-header">
+                        <h3 class="jobs-title">👤 My Profile</h3>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Profile Photo -->
+                        <div class="card" style="background: white; padding: 25px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                            <h4 style="margin-bottom: 16px;">Profile Photo</h4>
+                            <div style="text-align: center; margin-bottom: 16px;">
+                                <div class="provider-avatar-small" id="profile-avatar" style="width: 100px; height: 100px; margin: 0 auto;">
+                                    <img id="profile-avatar-img" src="" alt="Profile" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:none;">
+                                </div>
+                            </div>
+                            <label style="display: block; background: #7c3aed; color: white; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; margin-bottom: 8px;">
+                                📷 Upload Photo
+                                <input type="file" id="profile-photo-input" accept="image/*" style="display: none;" onchange="handlePhotoUpload(this)">
+                            </label>
+                            <p style="color: #6b7280; font-size: 0.85rem; text-align: center;">JPG, PNG, GIF or WebP. Max 2MB</p>
+                        </div>
+                        
+                        <!-- Profile Details -->
+                        <div class="card" style="background: white; padding: 25px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                            <h4 style="margin-bottom: 16px;">Profile Details</h4>
+                            
+                            <div class="form-group" style="margin-bottom: 16px;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 600;">Full Name</label>
+                                <input type="text" id="profile-name" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 16px;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 600;">Phone Number</label>
+                                <input type="tel" id="profile-phone" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                            </div>
+                            
+                            <div class="form-group" style="margin-bottom: 16px;">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 600;">Bio</label>
+                                <textarea id="profile-bio" class="form-control" rows="3" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; resize: vertical;" placeholder="Tell customers about your services..."></textarea>
+                            </div>
+                            
+                            <button onclick="saveProfile()" style="width: 100%; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">💾 Save Changes</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Location Settings -->
+                    <div class="card" style="background: white; padding: 25px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-top: 20px;">
+                        <h4 style="margin-bottom: 16px;">📍 Location Settings</h4>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 600;">Latitude</label>
+                                <input type="number" step="0.0001" id="profile-latitude" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label style="display: block; margin-bottom: 6px; font-weight: 600;">Longitude</label>
+                                <input type="number" step="0.0001" id="profile-longitude" class="form-control" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
+                            </div>
+                        </div>
+                        
+                        <button onclick="getCurrentLocation()" style="margin-top: 10px; background: #3b82f6; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer;">📍 Get Current Location</button>
+                        <button onclick="saveLocation()" style="margin-top: 10px; margin-left: 10px; background: #10b981; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer;">💾 Save Location</button>
+                    </div>
+                </div>
+            </div>
+            
 
         </main>
     </div>
@@ -507,6 +583,7 @@
             document.getElementById('jobs-section').style.display = 'none';
             document.getElementById('earnings-section').style.display = 'none';
             document.getElementById('reviews-section').style.display = 'none';
+            document.getElementById('profile-section').style.display = 'none';
             
             // Remove active class from all menu links
             document.querySelectorAll('.provider-menu-link').forEach(link => link.classList.remove('active'));
@@ -522,12 +599,23 @@
                 }
             });
             
+            // Load profile data if profile section
+            if (section === 'profile') {
+                loadProfileData();
+            }
+            
+            // Load jobs if jobs section
+            if (section === 'jobs') {
+                loadProviderJobs();
+            }
+            
             // Update page title
             const titles = {
                 'dashboard': 'Welcome back, ',
                 'jobs': 'My Jobs',
                 'earnings': 'My Earnings',
-                'reviews': 'My Reviews'
+                'reviews': 'My Reviews',
+                'profile': 'My Profile'
             };
             
             const userData = JSON.parse(localStorage.getItem('user'));
@@ -548,6 +636,229 @@
             localStorage.removeItem('selectedService');
             // Use absolute path from web root
             window.location.href = '/handsonapplication/landing.php';
+        }
+        
+        // Load profile data
+        async function loadProfileData() {
+            try {
+                const userData = JSON.parse(localStorage.getItem('user'));
+                if (!userData) return;
+                
+                // Get user info from API
+                const data = await apiCall('auth/user.php');
+                
+                if (data.user) {
+                    document.getElementById('profile-name').value = data.user.name || '';
+                    document.getElementById('profile-phone').value = data.user.phone || '';
+                    
+                    // Set profile photo
+                    const avatarImg = document.getElementById('profile-avatar-img');
+                    if (data.user.profile_photo) {
+                        avatarImg.src = data.user.profile_photo;
+                        avatarImg.style.display = 'block';
+                    } else {
+                        avatarImg.style.display = 'none';
+                    }
+                }
+                
+                if (data.worker_profile) {
+                    document.getElementById('profile-bio').value = data.worker_profile.bio || '';
+                    document.getElementById('profile-latitude').value = data.worker_profile.latitude || '';
+                    document.getElementById('profile-longitude').value = data.worker_profile.longitude || '';
+                }
+            } catch (error) {
+                console.error('Failed to load profile:', error);
+            }
+        }
+        
+        // Load provider jobs from localStorage
+        function loadProviderJobs() {
+            // Get all bookings from localStorage
+            var allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            
+            // Get current user info
+            var userData = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            // Filter jobs for this provider (in real app, filter by worker_id)
+            // For demo, show all bookings as provider jobs
+            var jobsSection = document.getElementById('jobs-section');
+            
+            if (allBookings.length > 0) {
+                var jobsHtml = '<div style="display: grid; gap: 16px;">';
+                
+                allBookings.forEach(function(job) {
+                    var statusClass = job.status === 'pending' ? 'pending' : (job.status === 'accepted' ? 'active' : (job.status === 'rejected' ? 'rejected' : 'completed'));
+                    var statusText = job.status === 'pending' ? 'Pending' : (job.status === 'accepted' ? 'Accepted' : (job.status === 'rejected' ? 'Rejected' : 'Completed'));
+                    var statusColor = job.status === 'pending' ? '#d97706' : (job.status === 'accepted' ? '#10b981' : (job.status === 'rejected' ? '#ef4444' : '#6b7280'));
+                    
+                    // Show customer info
+                    jobsHtml += '<div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">' +
+                        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">' +
+                        '<h4 style="margin: 0; color: #1f2937;">' + (job.title || 'Service Request') + '</h4>' +
+                        '<span style="background: ' + statusColor + '; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">' + statusText + '</span>' +
+                        '</div>' +
+                        '<p style="color: #6b7280; margin: 8px 0;"><strong>Customer:</strong> ' + (job.customer_name || 'N/A') + '</p>' +
+                        '<p style="color: #6b7280; margin: 8px 0;">' + (job.description || 'No description') + '</p>' +
+                        '<div style="display: flex; gap: 20px; font-size: 0.9rem; color: #6b7280;">' +
+                        '<span>📍 ' + (job.address || 'N/A') + '</span>' +
+                        '<span>📅 ' + (job.scheduled_date || 'Not set') + '</span>' +
+                        '</div>';
+                    
+                    // Show Accept/Reject buttons only for pending jobs
+                    if (job.status === 'pending') {
+                        jobsHtml += '<div style="margin-top: 12px;">' +
+                        '<button onclick="updateJobStatus(' + job.id + ', \'accepted\')" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-right: 8px;">✓ Accept</button>' +
+                        '<button onclick="updateJobStatus(' + job.id + ', \'rejected\')" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">✗ Reject</button>' +
+                        '</div>';
+                    }
+                    
+                    jobsHtml += '</div>';
+                });
+                
+                jobsHtml += '</div>';
+                
+                jobsSection.innerHTML = '<div class="jobs-section">' +
+                    '<div class="jobs-header">' +
+                    '<h3 class="jobs-title">📋 My Jobs (' + allBookings.length + ')</h3>' +
+                    '</div>' +
+                    jobsHtml +
+                    '</div>';
+            } else {
+                jobsSection.innerHTML = '<div class="jobs-section">' +
+                    '<div class="jobs-header">' +
+                    '<h3 class="jobs-title">📋 My Jobs</h3>' +
+                    '</div>' +
+                    '<p style="text-align: center; color: #6b7280; padding: 30px;">' +
+                    'No jobs yet. Accept job requests from customers to start working.' +
+                    '</p>' +
+                    '</div>';
+            }
+        }
+        
+        // Update job status (Accept/Reject)
+        window.updateJobStatus = function(jobId, newStatus) {
+            var bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            
+            // Find and update the job
+            for (var i = 0; i < bookings.length; i++) {
+                if (bookings[i].id === jobId) {
+                    bookings[i].status = newStatus;
+                    bookings[i].updated_at = new Date().toISOString();
+                    break;
+                }
+            }
+            
+            // Save back to localStorage
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            
+            // Show confirmation
+            var message = newStatus === 'accepted' ? 'Job accepted! The customer has been notified.' : 'Job rejected.';
+            showAlert(message, newStatus === 'accepted' ? 'success' : 'warning');
+            
+            // Reload the jobs list
+            setTimeout(loadProviderJobs, 1000);
+        };
+        
+        // Handle photo upload
+        async function handlePhotoUpload(input) {
+            if (!input.files || !input.files[0]) return;
+            
+            const file = input.files[0];
+            
+            // Check file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('File too large. Maximum size is 2MB.');
+                return;
+            }
+            
+            // Check file type
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.');
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const avatarImg = document.getElementById('profile-avatar-img');
+                avatarImg.src = e.target.result;
+                avatarImg.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Save profile
+        async function saveProfile() {
+            try {
+                const name = document.getElementById('profile-name').value;
+                const phone = document.getElementById('profile-phone').value;
+                const bio = document.getElementById('profile-bio').value;
+                
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('phone', phone);
+                formData.append('bio', bio);
+                
+                // Check if there's a new photo
+                const photoInput = document.getElementById('profile-photo-input');
+                if (photoInput.files && photoInput.files[0]) {
+                    formData.append('profile_photo', photoInput.files[0]);
+                }
+                
+                const result = await updateProfile(formData);
+                
+                if (result && result.user) {
+                    // Update local storage
+                    const userData = JSON.parse(localStorage.getItem('user'));
+                    userData.name = result.user.name;
+                    userData.profile_photo = result.profile_photo;
+                    localStorage.setItem('user', JSON.stringify(userData));
+                    
+                    alert('Profile saved successfully!');
+                }
+            } catch (error) {
+                alert('Failed to save profile: ' + error.message);
+            }
+        }
+        
+        // Get current location
+        function getCurrentLocation() {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser');
+                return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById('profile-latitude').value = position.coords.latitude.toFixed(6);
+                document.getElementById('profile-longitude').value = position.coords.longitude.toFixed(6);
+            }, function(error) {
+                alert('Failed to get location: ' + error.message);
+            });
+        }
+        
+        // Save location
+        async function saveLocation() {
+            try {
+                const latitude = document.getElementById('profile-latitude').value;
+                const longitude = document.getElementById('profile-longitude').value;
+                
+                if (!latitude || !longitude) {
+                    alert('Please enter or get your location');
+                    return;
+                }
+                
+                const result = await updateProfile({
+                    latitude: parseFloat(latitude),
+                    longitude: parseFloat(longitude)
+                });
+                
+                if (result) {
+                    alert('Location saved successfully!');
+                }
+            } catch (error) {
+                alert('Failed to save location: ' + error.message);
+            }
         }
     </script>
 </body>

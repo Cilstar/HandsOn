@@ -737,6 +737,7 @@
         </main>
     </div>
     
+    <script src="../assets/js/main.js"></script>
     <script>
         // Logout function
         function logout() {
@@ -797,6 +798,19 @@
             // Show selected section
             document.getElementById(sectionId).classList.add('active');
             
+            // Load data for the section
+            if (sectionId === 'users') {
+                loadAllUsers();
+            } else if (sectionId === 'providers') {
+                loadServiceProviders();
+            } else if (sectionId === 'customers') {
+                loadCustomers();
+            } else if (sectionId === 'dashboard') {
+                loadDashboardStats();
+            } else if (sectionId === 'bookings') {
+                loadBookings();
+            }
+            
             // Add active to clicked menu
             event.target.closest('.admin-menu-link').classList.add('active');
             
@@ -811,6 +825,180 @@
             };
             document.getElementById('page-title').textContent = titles[sectionId];
         }
+        
+        // Get role icon
+        function getRoleIcon(role) {
+            if (role === 'admin') return '👑';
+            if (role === 'worker') return '🔧';
+            return '👤';
+        }
+        
+        // Get category icon
+        function getCategoryIcon(category) {
+            var icons = { 'plumber': '🔧', 'electrician': '⚡', 'cleaner': '🧹', 'mechanic': '🚗' };
+            return icons[category] || '🔧';
+        }
+        
+        // Load all users
+        async function loadAllUsers() {
+            try {
+                var data = await apiCall('admin/stats.php');
+                
+                var usersHtml = data.users.map(function(user, index) {
+                    var roleBadge = user.role === 'admin' ? '👑 Admin' : (user.role === 'worker' ? '🔧 Provider' : '👤 Customer');
+                    var statusBadge = user.is_active ? '<span class="status-badge active">Active</span>' : '<span class="status-badge pending">Inactive</span>';
+                    
+                    return '<tr>' +
+                        '<td>' + (index + 1) + '</td>' +
+                        '<td>' + user.name + '</td>' +
+                        '<td>' + user.email + '</td>' +
+                        '<td>' + roleBadge + '</td>' +
+                        '<td>' + statusBadge + '</td>' +
+                    '</tr>';
+                }).join('');
+                
+                if (usersHtml) {
+                    document.querySelector('#users tbody').innerHTML = usersHtml;
+                }
+            } catch (error) {
+                console.error('Failed to load users:', error);
+            }
+        }
+        
+        // Load service providers
+        async function loadServiceProviders() {
+            try {
+                var data = await apiCall('workers/list.php');
+                
+                if (data.workers && data.workers.length > 0) {
+                    var providersHtml = data.workers.map(function(worker, index) {
+                        var statusBadge = worker.availability === 'available' ? '<span class="status-badge active">Available</span>' : '<span class="status-badge pending">Unavailable</span>';
+                        
+                        return '<tr>' +
+                            '<td>' + (index + 1) + '</td>' +
+                            '<td>' + worker.name + '</td>' +
+                            '<td>' + getCategoryIcon(worker.category) + ' ' + (worker.category || 'Worker') + '</td>' +
+                            '<td>' + worker.phone + '</td>' +
+                            '<td>' + statusBadge + '</td>' +
+                        '</tr>';
+                    }).join('');
+                    
+                    document.querySelector('#providers tbody').innerHTML = providersHtml;
+                }
+            } catch (error) {
+                console.error('Failed to load providers:', error);
+            }
+        }
+        
+        // Load customers
+        async function loadCustomers() {
+            try {
+                var data = await apiCall('admin/stats.php');
+                
+                var customers = data.users.filter(function(u) { return u.role === 'customer'; });
+                
+                if (customers.length > 0) {
+                    var customersHtml = customers.map(function(customer, index) {
+                        var statusBadge = customer.is_active ? '<span class="status-badge active">Active</span>' : '<span class="status-badge pending">Inactive</span>';
+                        
+                        return '<tr>' +
+                            '<td>' + (index + 1) + '</td>' +
+                            '<td>' + customer.name + '</td>' +
+                            '<td>' + customer.email + '</td>' +
+                            '<td>' + customer.phone + '</td>' +
+                            '<td>' + statusBadge + '</td>' +
+                        '</tr>';
+                    }).join('');
+                    
+                    document.querySelector('#customers tbody').innerHTML = customersHtml;
+                } else {
+                    document.querySelector('#customers').innerHTML = '<div class="data-card"><p style="text-align:center;color:#6b7280;padding:40px;">No customers registered yet.</p></div>';
+                }
+            } catch (error) {
+                console.error('Failed to load customers:', error);
+            }
+        }
+        
+        // Load bookings
+        function loadBookings() {
+            // Get bookings from localStorage
+            var bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            
+            var bookingsSection = document.getElementById('bookings');
+            
+            if (bookings.length > 0) {
+                var bookingsHtml = '<table style="width:100%;border-collapse:collapse;">' +
+                    '<thead style="background:#f9fafb;">' +
+                    '<tr>' +
+                    '<th style="padding:12px;text-align:left;border-bottom:2px solid #e5e7eb;">#</th>' +
+                    '<th style="padding:12px;text-align:left;border-bottom:2px solid #e5e7eb;">Customer</th>' +
+                    '<th style="padding:12px;text-align:left;border-bottom:2px solid #e5e7eb;">Provider</th>' +
+                    '<th style="padding:12px;text-align:left;border-bottom:2px solid #e5e7eb;">Service</th>' +
+                    '<th style="padding:12px;text-align:left;border-bottom:2px solid #e5e7eb;">Title</th>' +
+                    '<th style="padding:12px;text-align:left;border-bottom:2px solid #e5e7eb;">Address</th>' +
+                    '<th style="padding:12px;text-align:left;border-bottom:2px solid #e5e7eb;">Date</th>' +
+                    '<th style="padding:12px;text-align:left;border-bottom:2px solid #e5e7eb;">Status</th>' +
+                    '</tr>' +
+                    '</thead>' +
+                    '<tbody>';
+                
+                bookings.forEach(function(booking, index) {
+                    // Show actual status based on booking.status
+                    var statusText = booking.status === 'pending' ? 'Pending' : (booking.status === 'accepted' ? 'Accepted' : (booking.status === 'rejected' ? 'Rejected' : (booking.status === 'completed' ? 'Completed' : 'Pending')));
+                    var statusColor = booking.status === 'pending' ? '#d97706' : (booking.status === 'accepted' ? '#10b981' : (booking.status === 'rejected' ? '#ef4444' : '#6b7280'));
+                    var statusBadge = '<span style="background: ' + statusColor + '; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem;">' + statusText + '</span>';
+                    var dateStr = booking.scheduled_date || 'Not set';
+                    
+                    bookingsHtml += '<tr>' +
+                        '<td style="padding:12px;border-bottom:1px solid #e5e7eb;">' + (index + 1) + '</td>' +
+                        '<td style="padding:12px;border-bottom:1px solid #e5e7eb;">' + (booking.customer_name || 'N/A') + '</td>' +
+                        '<td style="padding:12px;border-bottom:1px solid #e5e7eb;">' + (booking.worker_name || 'N/A') + '</td>' +
+                        '<td style="padding:12px;border-bottom:1px solid #e5e7eb;">' + (booking.category || 'N/A') + '</td>' +
+                        '<td style="padding:12px;border-bottom:1px solid #e5e7eb;">' + (booking.title || 'N/A') + '</td>' +
+                        '<td style="padding:12px;border-bottom:1px solid #e5e7eb;">' + (booking.address || 'N/A') + '</td>' +
+                        '<td style="padding:12px;border-bottom:1px solid #e5e7eb;">' + dateStr + '</td>' +
+                        '<td style="padding:12px;border-bottom:1px solid #e5e7eb;">' + statusBadge + '</td>' +
+                    '</tr>';
+                });
+                
+                bookingsHtml += '</tbody></table>';
+                
+                bookingsSection.innerHTML = '<div class="data-card">' +
+                    '<div class="data-card-header">' +
+                    '<h3 class="data-card-title">📋 Bookings (' + bookings.length + ')</h3>' +
+                    '</div>' +
+                    bookingsHtml +
+                    '</div>';
+            } else {
+                bookingsSection.innerHTML = '<div class="data-card">' +
+                    '<div class="data-card-header">' +
+                    '<h3 class="data-card-title">📋 Bookings</h3>' +
+                    '</div>' +
+                    '<p style="text-align: center; color: #6b7280; padding: 40px;">' +
+                    'No bookings yet. Bookings will appear here when customers request services.' +
+                    '</p>' +
+                    '</div>';
+            }
+        }
+        
+        // Load dashboard stats
+        async function loadDashboardStats() {
+            try {
+                var data = await apiCall('admin/stats.php');
+                
+                if (data.stats) {
+                    // Update stat cards
+                    document.querySelectorAll('.stat-value')[0].textContent = data.stats.total_users || 0;
+                    document.querySelectorAll('.stat-value')[1].textContent = data.stats.total_workers || 0;
+                    document.querySelectorAll('.stat-value')[2].textContent = data.stats.total_customers || 0;
+                }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+        
+        // Load initial data
+        loadDashboardStats();
     </script>
 </body>
 </html>

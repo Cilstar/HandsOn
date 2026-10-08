@@ -11,8 +11,8 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body>
-    <div class="auth-container">
+<body style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #f59e0b 100%); min-height: 100vh;">
+    <div class="auth-container" style="background: transparent;">
         <div class="auth-card">
             <div class="auth-header">
                 <a href="index.php" class="logo" style="justify-content: center; margin-bottom: 20px;">

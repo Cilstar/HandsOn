@@ -71,6 +71,10 @@ try {
     $stmt = $db->query("SELECT COUNT(*) as low_ratings FROM reviews WHERE admin_reviewed = 0 AND rating < 3");
     $low_ratings = $stmt->fetch();
     
+    // Get all users list
+    $stmt = $db->query("SELECT id, name, email, phone, role, is_active, created_at FROM users ORDER BY created_at DESC");
+    $all_users = $stmt->fetchAll();
+    
     // Get jobs by category
     $stmt = $db->query("SELECT category, COUNT(*) as count FROM job_requests GROUP BY category");
     $jobs_by_category = $stmt->fetchAll();
@@ -120,7 +124,12 @@ try {
     http_response_code(API_SUCCESS);
     echo json_encode([
         'success' => true,
-        'users' => $users,
+        'users' => $all_users,
+        'stats' => [
+            'total_users' => $users['total'],
+            'total_workers' => $users['workers'],
+            'total_customers' => $users['customers']
+        ],
         'verified_workers' => $verified['verified'],
         'jobs' => $jobs,
         'payments' => $payments,
